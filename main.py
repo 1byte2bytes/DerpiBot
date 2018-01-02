@@ -14,3 +14,8 @@ async def on_ready():
 async def on_message(message):
     if message.content.startswith('!test'):
         await client.send_message(message.channel, 'Test complete')
+
+token = ""
+with open("token.txt") as m:
+    token = m.read().strip()
+client.run(token)
