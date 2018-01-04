@@ -9,6 +9,7 @@ from random import randint
 client = discord.Client()
 
 # Our empty search cache variable
+# The format is ["search string", {"tags":"image tags", "image":"image url"}, {"tags":"image tags", "image":"image url"}, ...]
 SEARCH_CACHE = []
 # A tiny function to get the current time in milliseconds
 current_milli_time = lambda: int(round(time.time() * 1000))
