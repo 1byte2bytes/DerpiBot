@@ -8,6 +8,11 @@ from random import randint
 # Initialize Discord.py
 client = discord.Client()
 
+# Read Derpibooru key
+DERPIBOORU_KEY = ""
+with open("derpikey.txt") as m:
+    DERPIBOORU_KEY = m.read().strip()
+
 # Our empty search cache variable
 # The format is ["search string", {"tags":"image tags", "image":"image url"}, {"tags":"image tags", "image":"image url"}, ...]
 SEARCH_CACHE = []
@@ -40,7 +45,6 @@ async def on_message(message):
 
         # Search our RAM cache first
         for entry in SEARCH_CACHE:
-            print(entry)
             if entry["search_string"] == search_string:
                 # If the search term is found in the cache, set cache level to 0 (completely RAM based) and set our entry to a random one
                 cache_level = 0
@@ -48,7 +52,7 @@ async def on_message(message):
         
         if cache_level == -1:
             # Build and get search from Derpibooru's API
-            search_url = "https://derpibooru.org/search.json?q={}".format(search_string)
+            search_url = "https://derpibooru.org/search.json?q={}&key={}".format(search_string, DERPIBOORU_KEY)
             r = requests.get(search_url)
             content = r.json()
             entry_count = len(content["search"])
