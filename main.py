@@ -36,13 +36,15 @@ async def on_message(message):
         search_string = message.content.split(" ",1)[1].replace(" ", "+")
         # Set cache level to -1 for unknown
         cache_level = -1
+        content = None
 
         # Search our RAM cache first
         for entry in SEARCH_CACHE:
-            if entry[0] == search_string:
+            print(entry)
+            if entry["search_string"] == search_string:
                 # If the search term is found in the cache, set cache level to 0 (completely RAM based) and set our entry to a random one
                 cache_level = 0
-                random_entry = entry[randint(1,len(entry)-1)]
+                content = entry
         
         if cache_level == -1:
             # Build and get search from Derpibooru's API
@@ -52,17 +54,17 @@ async def on_message(message):
             entry_count = len(content["search"])
 
             # Add this search to the RAM cache for later use
-            temp_search_cache = [search_string]
+            temp_search_cache = {"search_string":search_string, "search":[]}
             for entry in content["search"]:
                 t = {"tags":entry["tags"], "image":entry["image"]}
-                temp_search_cache.append(t)
+                temp_search_cache["search"].append(t)
             SEARCH_CACHE.append(temp_search_cache)
-
-            # Select a random entry from the query to be our lucky image
-            random_entry = content["search"][randint(0,entry_count-1)]
 
             # Set cache level to 2, for Derpibooru Server
             cache_level = 2
+
+        # Select a random entry from the query to be our lucky image
+        random_entry = content["search"][randint(0,len(content["search"])-1)]
 
         # Done searching, end the timer
         search_end = current_milli_time()
