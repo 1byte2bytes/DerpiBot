@@ -43,47 +43,41 @@ async def on_message(message):
     if message.content == "!bench":
         average_time = 0
         test = "!search pt,safe,solo"
-        for i in range(1000):
+        for i in range(1000000):
             # Start search timer
             search_start = current_milli_time()
             # Extract search query
-            search_string = test.split(" ",1)[1].replace(" ", "+")
+            search_string = test[8:].replace(" ", "+")
             # Set cache level to -1 for unknown
             cache_level = -1
-            content = None
 
             # Search our RAM cache first
-            if search_string in SEARCH_CACHE:
+            try:
+                random_entry = IMAGE_CACHE[SEARCH_CACHE[search_string][randint(0,len(SEARCH_CACHE[search_string])-1)]]
                 cache_level = 0
-                random_image_id = SEARCH_CACHE[search_string][randint(0,len(SEARCH_CACHE[search_string])-1)]
-                random_entry = IMAGE_CACHE[random_image_id]
-
-            if cache_level == -1:
+            except KeyError:
                 pass
 
             search_end = current_milli_time()
 
             average_time += search_end-search_start
 
-        await client.send_message(message.channel, str((average_time/1000)*1000) + "μs")
+        await client.send_message(message.channel, str((average_time/1000000)*1000) + "μs")
 
     # Search command
     if message.content.startswith('!search '):
         # Start search timer
         search_start = current_milli_time()
         # Extract search query
-        search_string = message.content.split(" ",1)[1].replace(" ", "+")
+        search_string = message.content[8:].replace(" ", "+")
         # Set cache level to -1 for unknown
         cache_level = -1
-        content = None
 
         # Search our RAM cache first
-        if search_string in SEARCH_CACHE:
+        try:
+            random_entry = IMAGE_CACHE[SEARCH_CACHE[search_string][randint(0,len(SEARCH_CACHE[search_string])-1)]]
             cache_level = 0
-            random_image_id = SEARCH_CACHE[search_string][randint(0,len(SEARCH_CACHE[search_string])-1)]
-            random_entry = IMAGE_CACHE[random_image_id]
-        
-        if cache_level == -1:
+        except KeyError:
             # Build and get search from Derpibooru's API
             search_url = "https://derpibooru.org/search.json?q={}&key={}".format(search_string, DERPIBOORU_KEY)
             r = requests.get(search_url)
